@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Turn {
+    //*******************************************************************
+    //instead of this make a fleet class and use it to define two fleets
     public static ArrayList<Ship> shipList(){
         ArrayList<Ship> notPlacedShips = new ArrayList<>();
         Ship carrier1 = new Ship(ShipType.CARRIER, null);
@@ -34,7 +36,7 @@ public class Turn {
         notPlacedShips.add(patrol_boat4);
         return notPlacedShips;
     }
-
+    //*************************************************
     public static void startTurnShips() {
         ArrayList<Ship> playerShips = shipList();
         int currentShipInt = 0;
@@ -44,11 +46,11 @@ public class Turn {
             String text = String.format("Enter Coordinates of %s (length: %d): ",
                     playerShips.get(currentShipInt).getShiptype(), playerShips.get(currentShipInt).getShiptype().getCells());
             System.out.print(text);
-            String input_coord = sc.nextLine();
-            if (InputCheck.checkPlacement(input_coord, playerShips.get(currentShipInt))) {
+            String inputCoord = sc.nextLine();
+            if (InputCheck.checkPlacement(inputCoord, playerShips.get(currentShipInt))) {
                 continue;
             }
-            Player.placeShip(input_coord, playerShips.get(currentShipInt));
+            Player.placeShip(inputCoord, playerShips.get(currentShipInt));
             playerNotPlacedShips.remove(0);
             currentShipInt++;
             Grid.drawGrid();
@@ -56,8 +58,20 @@ public class Turn {
     }
 
     public static void normalTurn(){
-        System.out.println("normal Turn");
-        //one player shoots
+        ArrayList<Ship> playerShips = shipList();
+        //ask where to shoot at
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter Coordinates to fire at: ");
+        String inputCoord = sc.nextLine();
+        //shoot at the position
+        Player.shootAt(inputCoord);
+        //check if boat has been sunk, update visual
+        /*for (Ship currentShip: playerShips){
+            for (String currentCoord: currentShip.getCoordinates())
+            if (Grid.targetcells.shotGet(currentCoord){
+                currentShip.setSunken(true);
+            }
+        }*/
         //check if game is over
         //other player shoots
         //check if game is over

@@ -1,9 +1,11 @@
 package User;
 
+import Check.InputCheck;
 import Grid.Grid;
 import Ship.Ship;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Player {
     public static void placeShip(String from_to, Ship currentShip){
@@ -43,5 +45,11 @@ public class Player {
             }
         }
     }
-
+    public static void shootAt(String coord){
+        if (InputCheck.checkShot(coord)){
+            System.out.println("somehow reset the thing");
+        }
+        Grid.targetcells.shotSet(coord,true);
+        Grid.targetcells.symbolSet(coord,"X");
+    }
 }
