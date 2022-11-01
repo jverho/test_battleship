@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Turn {
     public static ArrayList<Ship> shipList(){
-        ArrayList<Ship> notPlacedShips = new ArrayList<Ship>();
+        ArrayList<Ship> notPlacedShips = new ArrayList<>();
         Ship carrier1 = new Ship(ShipType.CARRIER, null);
         Ship battleship1 = new Ship(ShipType.BATTLESHIP, null);
         Ship battleship2 = new Ship(ShipType.BATTLESHIP, null);
@@ -30,44 +30,6 @@ public class Turn {
         notPlacedShips.add(patrol_boat3);
         notPlacedShips.add(patrol_boat4);
         return notPlacedShips;
-    }
-
-    //maybe change to create a list of Type Ship
-    private static ArrayList<ShipType> notPlaced() {
-        ArrayList<ShipType> shipList = new ArrayList<>();
-        final int maxBattleship = 2;
-        final int maxSubmarine = 3;
-        final int maxPatrolBoat = 4;
-        shipList.add(ShipType.CARRIER);
-        for (int numberOfBallteships = 0; numberOfBallteships < maxBattleship; numberOfBallteships++) {
-            shipList.add(ShipType.BATTLESHIP);
-        }
-        for (int numberOfSubmraines = 0; numberOfSubmraines < maxSubmarine; numberOfSubmraines++) {
-            shipList.add(ShipType.SUBMARINE);
-        }
-        for (int numberOfPatrolShips = 0; numberOfPatrolShips < maxPatrolBoat; numberOfPatrolShips++) {
-            shipList.add(ShipType.PATROL_BOAT);
-        }
-        return shipList;
-    }
-
-    public static void startTurn() {
-        //new Grid(); depending on implementation
-        ArrayList<ShipType> notPlacedShips = notPlaced();
-        while (!notPlacedShips.isEmpty()) {
-            Scanner sc = new Scanner(System.in);
-            String text = String.format("Enter Coordinates of %s (length: %d): ",
-                    notPlacedShips.get(0), notPlacedShips.get(0).getCells());
-            System.out.print(text);
-            String str = sc.nextLine();
-            if (!InputCheck.checkPlacement(str, notPlacedShips.get(0).getCells())) {
-                continue;
-            }
-            notPlacedShips.remove(0);
-            //System.out.println(notPlacedShips); //only to help visualize, delete later
-            //place ship on the coordinates
-            //print updated oceangrid
-        }
     }
 
     public static void startTurnShips() {
