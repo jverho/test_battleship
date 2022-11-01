@@ -8,7 +8,7 @@ public class InputCheck {
     public static boolean checkShot(String coordinate) {
         if (coordinate.length() != 2){
             System.out.println("coordinate should contain 2 characters");
-            return false;
+            return true;
         }
         else {
             String[] arrofStrShot = coordinate.split("");
@@ -18,33 +18,33 @@ public class InputCheck {
             String numbers = "1234567890";
             if (!letters.contains(check_letter)) {
                 System.out.println("first part of coordinates must contain one of these letters: ABCDEFGHIJ");
-                return false;
+                return true;
             }
             if (!numbers.contains(check_number)){
                 System.out.println("second part of coordinates must contain one os these numbers: 0123456789");
-                return false;
+                return true;
             }
             if (Grid.targetcells.shotGet(coordinate)){
                 System.out.printf("the coordinate %s has been hit already\n", coordinate);
-                return false;
+                return true;
             }
             //also add a check for the computer depending on implementation
-            else {return true;}
+            else {return false;}
         }
 
     }
 
 
 
-    public static boolean checkPlacementShip(String from_to, Ship currentShip){
+    public static boolean checkPlacement(String from_to, Ship currentShip){
         if (from_to.length() != 5){
             System.out.println("entry should contain 5 characters");
-            return false;
+            return true;
         }
         else{
             if (!from_to.contains(",")){
                 System.out.println("entry must contain a , to separate coordinates");
-                return false;
+                return true;
             }
             String[] arrofStrPl = from_to.split(",");
             String firstCoord = arrofStrPl[0];
@@ -57,22 +57,22 @@ public class InputCheck {
             int secondCoordNumber = Integer.parseInt(secondCoordList[1]);
 
             //nothing has been hit, checkShot can be used to check correctness of placement coordinates
-            if (!checkShot(firstCoord)){
-                return false;
+            if (checkShot(firstCoord)){
+                return true;
             }
-            if (!checkShot(secondCoord)){
-                return false;
+            if (checkShot(secondCoord)){
+                return true;
             }
             //checks that the ship is not placed diagonally
             if (firstCoordLetter != secondCoordLetter && firstCoordNumber != secondCoordNumber){
                 System.out.println("Ships can not be placed diagonally");
-                return false;
+                return true;
             }
             //checks that the ship has the right length
             if (Math.abs(firstCoordLetter-secondCoordLetter) != (currentShip.getShiptype().getCells()-1) &&
                     Math.abs(firstCoordNumber-secondCoordNumber) != (currentShip.getShiptype().getCells()-1)) {
                 System.out.println("Ship does not fit into coordinates entered");
-                return false;
+                return true;
             }
 
             //check if there is a boat on coordinates for column
@@ -86,7 +86,7 @@ public class InputCheck {
                 for (String coord: shipCoordinates) {
                     if (Grid.targetcells.boatGet(coord)) {
                         System.out.printf("there is already a ship on %s\n", coord);
-                        return false;
+                        return true;
                     }
                 }
             }
@@ -102,11 +102,11 @@ public class InputCheck {
                 for (String coord: shipCoordinatesRow) {
                     if (Grid.targetcells.boatGet(coord)) {
                         System.out.printf("there is already a ship on %s\n", coord);
-                        return false;
+                        return true;
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 }

@@ -42,7 +42,7 @@ public class Turn {
                     playerShips.get(currentShipInt).getShiptype(), playerShips.get(currentShipInt).getShiptype().getCells());
             System.out.print(text);
             String str = sc.nextLine();
-            if (!InputCheck.checkPlacementShip(str, playerShips.get(currentShipInt))) {
+            if (InputCheck.checkPlacement(str, playerShips.get(currentShipInt))) {
                 continue;
             }
             playerNotPlacedShips.remove(0);
