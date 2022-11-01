@@ -50,11 +50,9 @@ public class InputCheck {
             String firstCoord = arrofStrPl[0];
             String secondCoord = arrofStrPl[1];
             char firstCoordLetter = firstCoord.charAt(0);
-            String[] firstCoordList = firstCoord.split("");
-            int firstCoordNumber = Integer.parseInt(firstCoordList[1]);
+            int firstCoordNumber = Integer.parseInt(String.valueOf((firstCoord.charAt(1))));
             char secondCoordLetter = secondCoord.charAt(0);
-            String[] secondCoordList = secondCoord.split("");
-            int secondCoordNumber = Integer.parseInt(secondCoordList[1]);
+            int secondCoordNumber = Integer.parseInt(String.valueOf((secondCoord.charAt(1))));
 
             //nothing has been hit, checkShot can be used to check correctness of placement coordinates
             if (checkShot(firstCoord)){
@@ -77,14 +75,14 @@ public class InputCheck {
 
             //check if there is a boat on coordinates for column
             if (firstCoordLetter == secondCoordLetter){
-                int startpoint = Math.min(firstCoordNumber, secondCoordNumber);
+                int startPointColumn = Math.min(firstCoordNumber, secondCoordNumber);
                 ArrayList<String> shipCoordinates = new ArrayList<>();
                 for (int i = 0; i < currentShip.getShiptype().getCells(); i++){
-                    shipCoordinates.add(String.format(firstCoordLetter+"%d", startpoint));
-                    startpoint++;
+                    shipCoordinates.add(String.format(firstCoordLetter+"%d", startPointColumn));
+                    startPointColumn++;
                 }
                 for (String coord: shipCoordinates) {
-                    if (Grid.targetcells.boatGet(coord)) {
+                    if (Grid.oceancells.boatGet(coord)) {
                         System.out.printf("there is already a ship on %s\n", coord);
                         return true;
                     }
@@ -100,7 +98,7 @@ public class InputCheck {
                     startPoint++;
                 }
                 for (String coord: shipCoordinatesRow) {
-                    if (Grid.targetcells.boatGet(coord)) {
+                    if (Grid.oceancells.boatGet(coord)) {
                         System.out.printf("there is already a ship on %s\n", coord);
                         return true;
                     }

@@ -1,6 +1,9 @@
 package Turn;
+import Grid.Grid;
 import Ship.*;
 import Check.InputCheck;
+import User.Player;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -41,15 +44,15 @@ public class Turn {
             String text = String.format("Enter Coordinates of %s (length: %d): ",
                     playerShips.get(currentShipInt).getShiptype(), playerShips.get(currentShipInt).getShiptype().getCells());
             System.out.print(text);
-            String str = sc.nextLine();
-            if (InputCheck.checkPlacement(str, playerShips.get(currentShipInt))) {
+            String input_coord = sc.nextLine();
+            if (InputCheck.checkPlacement(input_coord, playerShips.get(currentShipInt))) {
                 continue;
             }
+            Player.placeShip(input_coord, playerShips.get(currentShipInt));
             playerNotPlacedShips.remove(0);
             currentShipInt++;
-            //place ship on coordinates
+            Grid.drawGrid();
         }
-
     }
 
     public static void normalTurn(){
