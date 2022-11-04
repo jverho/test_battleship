@@ -1,55 +1,61 @@
 package User;
-
-import Check.InputCheck;
-import Grid.Grid;
-import Ship.Ship;
-
+import Ship.*;
+import Grid.*;
+import Check.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Player {
-    public static void placeShip(String from_to, Ship currentShip){
-        //only for targetcells at the moment
-        char firstCoordLetter = from_to.charAt(0);
-        char secondCoordLetter = from_to.charAt(3);
-        int firstCoordNumber = Integer.parseInt(String.valueOf(from_to.charAt(1)));
-        int secondCoordNumber = Integer.parseInt(String.valueOf(from_to.charAt(4)));
-        //place ship on a column
-        if (from_to.charAt(0) == from_to.charAt(3)) {
-            //generate list with the coordinates
-            int startPointColumn = Math.min(firstCoordNumber, secondCoordNumber);
-            ArrayList<String> shipCoordinatesColumn = new ArrayList<>();
-            for (int i = 0; i < currentShip.getShiptype().getCells(); i++) {
-                shipCoordinatesColumn.add(String.format(from_to.charAt(0) + "%d", startPointColumn));
-                startPointColumn++;
+    private final static Cellgrid ownSide = Grid.oceancells;
+    private static final Cellgrid targetSide = Grid.targetcells;
+    private static final ArrayList<Ship> ownFleet = Fleet.playerfleet;
+    private static final ArrayList<Ship> enemyFleet = Fleet.aifleet;
+    private static final boolean ai = false;
+
+    public static void start() {
+        ArrayList<ShipType> notPlacedShips = Fleet.notPlaced();
+        while (!notPlacedShips.isEmpty()) {
+            Scanner sc = new Scanner(System.in);
+            String text = String.format("Enter Coordinates of %s (length: %d): ",
+                    notPlacedShips.get(0), notPlacedShips.get(0).getLength());
+            System.out.print(text);
+            String str = sc.nextLine();
+            if (InputCheck.checkPlacement(str, notPlacedShips.get(0).getLength(), ownSide, ai)) {
+                continue;
             }
-            //place the ship on the coordinates
-            for (String coord: shipCoordinatesColumn) {
-                Grid.oceancells.boatSet(coord, true);
-                Grid.oceancells.symbolSet(coord, currentShip.getShiptype().getPlaceholder());
-            }
-        }
-        //place ship on a row
-        else if (from_to.charAt(1) == from_to.charAt(4)){
-            int startPointRow = Math.min(firstCoordLetter, secondCoordLetter);
-            ArrayList<String> shipCoordinatesRow = new ArrayList<>();
-            for (int i = 0; i < currentShip.getShiptype().getCells(); i++){
-                char x = (char) startPointRow;
-                shipCoordinatesRow.add(String.format("%c"+"%d", x, firstCoordNumber));
-                startPointRow++;
-            }
-            //place the ship on the coordinates
-            for (String coord: shipCoordinatesRow) {
-                Grid.oceancells.boatSet(coord, true);
-                Grid.oceancells.symbolSet(coord, currentShip.getShiptype().getPlaceholder());
-            }
+            Ship ship = new Ship(notPlacedShips.get(0), InputCheck.getallCoordinates(str));
+            Fleet.addShip( ownFleet, ship);
+            notPlacedShips.remove(0);
+            Ship.placeShip(ship, ownSide);
+            Grid.drawGrid();
         }
     }
-    public static void shootAt(String coord){
-        if (InputCheck.checkShot(coord)){
-            System.out.println("somehow reset the thing");
+
+    public static void shot(){
+        boolean valid = false;
+        String str = "";
+        while (!valid) {
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Enter Coordinate to shoot: ");
+            str = sc.nextLine();
+            if(InputCheck.checkShot(str, ai, targetSide)){
+                valid = true;
+            }
         }
-        Grid.targetcells.shotSet(coord,true);
-        Grid.targetcells.symbolSet(coord,"X");
+        Cellgrid.shotSet(str, targetSide, true);
+        if (Cellgrid.boatGet(str, targetSide)){
+            Cellgrid.symbolSet(str,targetSide,"X");
+            boolean sunk = Ship.checkHits(str, enemyFleet, targetSide);
+            Grid.drawGrid();
+            System.out.println("You hit!");
+            if (sunk){
+                System.out.println("You sunk a Ship!");
+            }
+        }
+        else {
+            Cellgrid.symbolSet(str,targetSide,"O");
+            Grid.drawGrid();
+            System.out.println("You missed!");
+        }
     }
 }

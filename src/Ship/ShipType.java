@@ -6,19 +6,20 @@ public enum ShipType {
     SUBMARINE(3, "S"),
     PATROL_BOAT(2, "P");
 
-    private int cells;
-    private String placeholder;
+    private final int  length;
+    private final String placeholder;
 
-    ShipType(int cells, String placeholder){
-        this.cells = cells;
+    ShipType(int length, String placeholder){
+        this.length = length;
         this.placeholder = placeholder;
     }
 
-    public int getCells() {
-        return cells;
+    public int getLength() {
+        return length;
     }
 
     public String getPlaceholder() {
         return placeholder;
     }
 }
+

@@ -1,14 +1,11 @@
 package Check;
-import Grid.Grid;
-import Ship.*;
-import java.util.ArrayList;
-
+import Grid.*;
 
 public class InputCheck {
-    public static boolean checkShot(String coordinate) {
+    public static boolean checkShot(String coordinate, boolean ai, Cellgrid side) {
         if (coordinate.length() != 2){
-            System.out.println("coordinate should contain 2 characters");
-            return true;
+            if  (!ai) System.out.println("Coordinate should contain 2 characters");
+            return false;
         }
         else {
             String[] arrofStrShot = coordinate.split("");
@@ -17,94 +14,105 @@ public class InputCheck {
             String letters = "ABCDEFGHIJ";
             String numbers = "1234567890";
             if (!letters.contains(check_letter)) {
-                System.out.println("first part of coordinates must contain one of these letters: ABCDEFGHIJ");
-                return true;
+                if  (!ai)System.out.println("First part of coordinates must contain one of these letters: ABCDEFGHIJ");
+                return false;
             }
             if (!numbers.contains(check_number)){
-                System.out.println("second part of coordinates must contain one os these numbers: 0123456789");
-                return true;
+                if  (!ai)System.out.println("Second part of coordinates must contain one os these numbers: 0123456789");
+                return false;
+            } else if (side.shotGet(coordinate, side)){
+                if  (!ai)System.out.printf("The coordinate %s has been hit already\n", coordinate);
+                return false;
             }
-            if (Grid.targetcells.shotGet(coordinate)){
-                System.out.printf("the coordinate %s has been hit already\n", coordinate);
-                return true;
-            }
-            //also add a check for the computer depending on implementation
-            else {return false;}
         }
-
+        return true;
     }
 
-
-
-    public static boolean checkPlacement(String from_to, Ship currentShip){
+    public static boolean checkPlacement(String from_to, int currentShipLength, Cellgrid side, boolean ai){
         if (from_to.length() != 5){
-            System.out.println("entry should contain 5 characters");
+            if  (!ai)System.out.println("Entry should contain 5 characters");
             return true;
         }
         else{
             if (!from_to.contains(",")){
-                System.out.println("entry must contain a , to separate coordinates");
+                if  (!ai)System.out.println("Entry must contain a , to separate coordinates");
                 return true;
             }
             String[] arrofStrPl = from_to.split(",");
             String firstCoord = arrofStrPl[0];
             String secondCoord = arrofStrPl[1];
+            if (!checkShot(firstCoord, ai, side)){return true;}
+            if (!checkShot(secondCoord, ai, side)){return true;}
             char firstCoordLetter = firstCoord.charAt(0);
-            int firstCoordNumber = Integer.parseInt(String.valueOf((firstCoord.charAt(1))));
+            String[] firstCoordList = firstCoord.split("");
+            int firstCoordNumber = Integer.parseInt(firstCoordList[1]);
             char secondCoordLetter = secondCoord.charAt(0);
-            int secondCoordNumber = Integer.parseInt(String.valueOf((secondCoord.charAt(1))));
+            String[] secondCoordList = secondCoord.split("");
+            int secondCoordNumber = Integer.parseInt(secondCoordList[1]);
 
-            //nothing has been hit, checkShot can be used to check correctness of placement coordinates
-            if (checkShot(firstCoord)){
-                return true;
-            }
-            if (checkShot(secondCoord)){
-                return true;
-            }
-            //checks that the ship is not placed diagonally
             if (firstCoordLetter != secondCoordLetter && firstCoordNumber != secondCoordNumber){
-                System.out.println("Ships can not be placed diagonally");
+                if  (!ai)System.out.println("Ships can not be placed diagonally");
                 return true;
             }
-            //checks that the ship has the right length
-            if (Math.abs(firstCoordLetter-secondCoordLetter) != (currentShip.getShiptype().getCells()-1) &&
-                    Math.abs(firstCoordNumber-secondCoordNumber) != (currentShip.getShiptype().getCells()-1)) {
-                System.out.println("Ship does not fit into coordinates entered");
+            if (Math.abs(firstCoordLetter - secondCoordLetter) != currentShipLength -1  &&
+                    Math.abs(firstCoordNumber -secondCoordNumber) != currentShipLength - 1){
+                if  (!ai)System.out.println("Ship does not fit into coordinates entered");
                 return true;
             }
-
-            //check if there is a boat on coordinates for column
-            if (firstCoordLetter == secondCoordLetter){
-                int startPointColumn = Math.min(firstCoordNumber, secondCoordNumber);
-                ArrayList<String> shipCoordinates = new ArrayList<>();
-                for (int i = 0; i < currentShip.getShiptype().getCells(); i++){
-                    shipCoordinates.add(String.format(firstCoordLetter+"%d", startPointColumn));
-                    startPointColumn++;
-                }
-                for (String coord: shipCoordinates) {
-                    if (Grid.oceancells.boatGet(coord)) {
-                        System.out.printf("there is already a ship on %s\n", coord);
-                        return true;
-                    }
-                }
-            }
-            //check if there is a boat on coordinates for row
-            if (firstCoordNumber == secondCoordNumber){
-                int startPoint = Math.min(firstCoordLetter, secondCoordLetter);
-                ArrayList<String> shipCoordinatesRow = new ArrayList<>();
-                for (int i = 0; i < currentShip.getShiptype().getCells(); i++){
-                    char x = (char) startPoint;
-                    shipCoordinatesRow.add(String.format("%c"+"%d", x, firstCoordNumber));
-                    startPoint++;
-                }
-                for (String coord: shipCoordinatesRow) {
-                    if (Grid.oceancells.boatGet(coord)) {
-                        System.out.printf("there is already a ship on %s\n", coord);
-                        return true;
-                    }
+            String [] allCoordinates = getallCoordinates(from_to);
+            for (String allCoordinate : allCoordinates) {
+                if (Cellgrid.boatGet(allCoordinate, side)) {
+                    if  (!ai)System.out.println("There is already a ship placed in that spot.");
+                    return true;
                 }
             }
         }
         return false;
+    }
+    public static String[] getallCoordinates(String str){
+        StringBuilder coords = new StringBuilder();
+        String[] arrofStrPl = str.split(",");
+        String firstCoord = arrofStrPl[0];
+        String secondCoord = arrofStrPl[1];
+        char firstCoordLetter = firstCoord.charAt(0);
+        String[] firstCoordList = firstCoord.split("");
+        int firstCoordNumber = Integer.parseInt(firstCoordList[1]);
+        char secondCoordLetter = secondCoord.charAt(0);
+        String[] secondCoordList = secondCoord.split("");
+        int secondCoordNumber = Integer.parseInt(secondCoordList[1]);
+        String letters = "ABCDEFGHIJ";
+
+        if (firstCoordLetter == secondCoordLetter){
+            if (firstCoordNumber < secondCoordNumber){
+                for (int i = 0; i < Math.abs(firstCoordNumber -secondCoordNumber); i++) {
+                    coords.append(firstCoordLetter).append(firstCoordNumber+i).append(",");}
+                coords.append(secondCoord);
+                return coords.toString().split(",");
+            }
+
+            if (firstCoordNumber > secondCoordNumber){
+                for (int i = 0; i < Math.abs(firstCoordNumber -secondCoordNumber); i++) {
+                    coords.append(firstCoordLetter).append(secondCoordNumber+i).append(",");}
+                coords.append(firstCoord);
+                return coords.toString().split(",");
+            }
+        }
+
+        if (firstCoordNumber == secondCoordNumber){
+            if (letters.indexOf(firstCoordLetter) < letters.indexOf(secondCoordLetter)) {
+                for (int i = 0; i < Math.abs(firstCoordLetter - secondCoordLetter); i++)
+                    coords.append(letters.charAt(letters.indexOf(firstCoordLetter) + i)).append(firstCoordNumber).append(",");
+                coords.append(secondCoord);
+                return coords.toString().split(",");
+            }
+            if (letters.indexOf(firstCoordLetter) > letters.indexOf(secondCoordLetter)) {
+                for (int i = 0; i < Math.abs(firstCoordLetter - secondCoordLetter); i++)
+                    coords.append(letters.charAt(letters.indexOf(secondCoordLetter) + i)).append(firstCoordNumber).append(",");
+                coords.append(firstCoord);
+                return coords.toString().split(",");
+            }
+        }
+        coords.append(secondCoord);
+        return coords.toString().split(",");
     }
 }
